@@ -14,12 +14,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<?> handleIllegalState(IllegalStateException ex) {
-        HttpStatus status = ex.getMessage().contains("Invalid credentials")
-                ? HttpStatus.UNAUTHORIZED
-                : HttpStatus.CONFLICT;
-        return ResponseEntity.status(status).body(Map.of("message", ex.getMessage()));
+public ResponseEntity<?> handleIllegalState(IllegalStateException ex) {
+    String msg = ex.getMessage();
+    HttpStatus status;
+    if (msg.contains("Invalid credentials")) {
+        status = HttpStatus.UNAUTHORIZED;
+    } else if (msg.contains("not found")) {
+        status = HttpStatus.NOT_FOUND;
+    } else {
+        status = HttpStatus.CONFLICT;
     }
+    return ResponseEntity.status(status).body(Map.of("message", msg));
+}
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {

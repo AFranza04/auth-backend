@@ -52,4 +52,12 @@ public class AuthService {
         String token = jwtUtil.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername());
     }
+
+    api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 }
